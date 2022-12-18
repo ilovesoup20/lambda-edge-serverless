@@ -9,19 +9,20 @@ provider:
 package:
   individually: true
   patterns:
-    - '!*/**'
+    # - '!**/**'
     - '!package-testing/**'
     - '!venv/**'
     - '!node_modules/**'
+    - '!pkg/**'
 
 functions:
-  # func1:
-  #   handler: index.handler
-  #   module: func1
+  viewerRequest:
+    handler: viewer_request.handler
+    module: rootFunc1
 
-  # func2:
-  #   handler: index.handler
-  #   module: func2
+  originResponse:
+    handler: origin_response.handler
+    module: rootFunc2
 
   # viewerRequest:
   #   handler: viewer_request.handler
@@ -31,26 +32,33 @@ functions:
   #   handler: origin_response.handler
   #   module: src/image_service/origin_response
 
-  viewerRequest:
-    handler: src/service/viewer_request.handler
-    package:
-      patterns:
-        - 'src/service/viewer_request.py'
+  # viewerRequest:
+  #   handler: src/service/viewer_request.handler
+  #   package:
+  #     patterns:
+  #       - 'src/service/viewer_request.py'
   
-  originResponse:
-    handler: src/service/origin_response.handler
-    package:
-      patterns:
-        - 'src/service/origin_response.py'
+  # originResponse:
+  #   handler: src/service/origin_response.handler
+  #   package:
+  #     patterns:
+  #       - 'src/service/origin_response.py'
 
 plugins:
   - serverless-python-requirements
   - serverless-localstack
+  - serverless-plugin-scripts
 
 custom:
   localstack:
     stages:
       - local
-  pythonRequirements:
-    dockerizePip: true
+  
+  scripts:
+    hooks:
+      'package:finalize': ./foo.sh
+
+
+  # pythonRequirements:
+  #   dockerizePip: true
   
