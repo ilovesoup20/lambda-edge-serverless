@@ -1,0 +1,56 @@
+service: lambda-edge-serverless
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+
+package:
+  individually: true
+  patterns:
+    - '!*/**'
+    - '!package-testing/**'
+    - '!venv/**'
+    - '!node_modules/**'
+
+functions:
+  # func1:
+  #   handler: index.handler
+  #   module: func1
+
+  # func2:
+  #   handler: index.handler
+  #   module: func2
+
+  # viewerRequest:
+  #   handler: viewer_request.handler
+  #   module: src/image_service/viewer_request
+  
+  # originResponse:
+  #   handler: origin_response.handler
+  #   module: src/image_service/origin_response
+
+  viewerRequest:
+    handler: src/service/viewer_request.handler
+    package:
+      patterns:
+        - 'src/service/viewer_request.py'
+  
+  originResponse:
+    handler: src/service/origin_response.handler
+    package:
+      patterns:
+        - 'src/service/origin_response.py'
+
+plugins:
+  - serverless-python-requirements
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - local
+  pythonRequirements:
+    dockerizePip: true
+  
