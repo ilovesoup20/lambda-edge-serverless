@@ -1,82 +1,52 @@
-<!--
-title: 'AWS Python Example'
-description: 'This template demonstrates how to deploy a Python function running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: python
-priority: 2
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Links
+[AWS - Deploy Python Lambda functions with .zip file archives](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html)
+# Commands
+```sh
+# Update AWS Lambda Function
+> aws lambda update-function-code --function-name coffeebean-python1 --zip-file fileb://lambda-func.zip
 
+# Invoke AWS Lambda Function
+> aws lambda invoke --function-name coffeebean-python1 out 
 
-# Serverless Framework AWS Python Example
+# Install pillow for AWS Lambda Runtime Environment
+> pip install --target . --platform manylinux1_x86_64 --only-binary=:all: pillow
 
-This template demonstrates how to deploy a Python function running on AWS Lambda using the traditional Serverless Framework. The deployed function does not include any event definitions as well as any kind of persistence (database). For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about configuration of specific `events`, please refer to our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).
+# Create AWS Lambda Function
+>
 
-## Usage
-
-### Deployment
-
-In order to deploy the example, you need to run the following command:
+# Create AWS Role
+>
 
 ```
-$ serverless deploy
+## Issues and fixes
+### Conflicting boto versions when installing localstack, awscli and awscli-local
+https://stackoverflow.com/a/65799965/20306193
+```sh
+> pip3 uninstall botocore, s3transfer, boto3
+> pip3 install botocore, s3transfer, boto3
 ```
+---
 
-After running deploy, you should see output similar to:
-
-```bash
-Deploying aws-python-project to stage dev (us-east-1)
-
-✔ Service deployed to stack aws-python-project-dev (112s)
-
-functions:
-  hello: aws-python-project-dev-hello (1.5 kB)
+### ImportError: cannot import name _imaging
+https://stackoverflow.com/a/65799965/20306193
+```sh
+> pip3 install --platform manylinux1_x86_64 --only-binary=:all: pillow
 ```
+---
 
-### Invocation
+### Your function's execution role must be assumable by the edgelambda.amazonaws.com service principal.
+---
 
-After successful deployment, you can invoke the deployed function by using the following command:
-
-```bash
-serverless invoke --function hello
+### Inaccessible host: `localhost' at port `4566'. This service may not be available in the `us-east-1' region.
+https://github.com/localstack/serverless-localstack/issues/125#issuecomment-975875765
+```sh
+#Fixed by running docker to start localstack
+> docker run --rm -it -p 4566:4566 -p 4571:4571 localstack/localstack
 ```
+---
 
-Which should result in response similar to the following:
-
-```json
-{
-    "statusCode": 200,
-    "body": "{\"message\": \"Go Serverless v3.0! Your function executed successfully!\", \"input\": {}}"
-}
+### Creating and activating virtual environment in Python
+https://stackoverflow.com/questions/32390291/pip-freeze-for-only-project-requirements
+```sh
+> python3 -m venv ./venv source myvenv/bin/activate
 ```
-
-### Local development
-
-You can invoke your function locally by using the following command:
-
-```bash
-serverless invoke local --function hello
-```
-
-Which should result in response similar to the following:
-
-```
-{
-    "statusCode": 200,
-    "body": "{\"message\": \"Go Serverless v3.0! Your function executed successfully!\", \"input\": {}}"
-}
-```
-
-### Bundling dependencies
-
-In case you would like to include third-party dependencies, you will need to use a plugin called `serverless-python-requirements`. You can set it up by running the following command:
-
-```bash
-serverless plugin install -n serverless-python-requirements
-```
-
-Running the above will automatically add `serverless-python-requirements` to `plugins` section in your `serverless.yml` file and add it as a `devDependency` to `package.json` file. The `package.json` file will be automatically created if it doesn't exist beforehand. Now you will be able to add your dependencies to `requirements.txt` file (`Pipfile` and `pyproject.toml` is also supported but requires additional configuration) and they will be automatically injected to Lambda package during build process. For more details about the plugin's configuration, please refer to [official documentation](https://github.com/UnitedIncome/serverless-python-requirements).
